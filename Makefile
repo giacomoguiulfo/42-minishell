@@ -6,7 +6,7 @@
 #    By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/20 14:52:17 by gguiulfo          #+#    #+#              #
-#    Updated: 2017/05/04 01:55:51 by gguiulfo         ###   ########.fr        #
+#    Updated: 2017/05/06 00:07:48 by gguiulfo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,11 +15,12 @@ NAME		:= minishell
 CC			:= gcc
 CFLAGS		+= -Wall -Wextra -Werror
 CFLAGS		+= -I includes -I libft/includes
-LDFLAGS		:= -L libft/ -lft
+LDFLAGS		+= -L libft/ -lft
+# LDFLAGS		+= alloc_wrap.c
 
 LIBFT		:= libft/libft.a
 
-FILES		:= ms_main
+FILES		:= msh_main msh_cmds msh_utils
 
 SRC = $(addprefix src/, $(addsuffix .c, $(FILES)))
 OBJ = $(SRC:.c=.o)
