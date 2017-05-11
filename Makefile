@@ -6,7 +6,7 @@
 #    By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/20 14:52:17 by gguiulfo          #+#    #+#              #
-#    Updated: 2017/05/11 10:42:44 by gguiulfo         ###   ########.fr        #
+#    Updated: 2017/05/11 15:40:04 by gguiulfo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,8 +21,8 @@ LDFLAGS		+= -L libft/ -lft
 
 LIBFT		:= libft/libft.a
 
-REGULAR		:= msh_main msh_cmds msh_utils msh_strsplit
-BUILTINS	:= msh_echo msh_cd msh_extra msh_env msh_setenv
+REGULAR		:= msh_main msh_exec msh_utils msh_strsplit
+BUILTINS	:= msh_echo msh_cd msh_extra msh_env msh_setenv msh_unsetenv
 
 FILES		:=	$(addprefix builtins/, $(BUILTINS)) \
 				$(REGULAR)

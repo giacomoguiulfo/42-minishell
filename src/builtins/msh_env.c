@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 19:24:50 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/11 10:40:17 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/11 15:23:18 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ int		msh_displ_env(char **args, t_dnarr *newenvp)
 
 	i = 0;
 	(void)args;
-	while (newenvp->contents[i])
-		ft_putendl(newenvp->contents[i++]);
+	while (i < newenvp->end)
+	{
+		if (newenvp->contents[i] != NULL)
+			ft_putendl(newenvp->contents[i]);
+		++i;
+	}
 	return (1);
 }
