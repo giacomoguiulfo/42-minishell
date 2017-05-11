@@ -6,90 +6,44 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/05 21:57:23 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/06 00:46:11 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/11 11:25:14 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-extern char **environ; // TODO: Check this...
-
-// TODO: I can't use global variables :(
-char	*builtin_str[] = {
-	"cd",
-	"help",
-	"exit"
-};
-
-// TODO: I can't use global variables :(
-int		(*builtin_func[]) (char **) = {
-	&msh_cd,
-	&msh_help,
-	&msh_exit
-};
-
-int		msh_num_builtins(void)
-{
-	return (sizeof(builtin_str) / sizeof(char *));
-}
-
-int		msh_cd(char **args)
-{
-	if (args[1] == NULL)
-	{
-		ft_dprintf(2, "minishell: expected argument to \"cd\"\n");
-	}
-	else
-	{
-		if (chdir(args[1]) != 0)
-		{
-			ft_dprintf(2, "Error: unable to change directory\n");
-		}
-	}
-	return (1);
-}
-
-int		msh_help(char **args)
-{
-	int i;
-	int total;
-
-	i = -1;
-	total = msh_num_builtins();
-	ft_putstr("************************************************************\n");
-	ft_putstr("*                        Minishell                         *\n");
-	ft_putstr("* -------------------------------------------------------- *\n");
-	ft_putstr("* Author:        gguiulfo                                  *\n");
-	ft_putstr("* Contact:       gguiulfo@student.42.us.org                *\n");
-	ft_putstr("* Description:   A simple shell made in C.                 *\n");
-	ft_putstr("*                By Odin, by Thor! Use the shell!!!        *\n");
-	ft_putstr("* Builtin Commands:                                        *\n");
-	while (++i < total)
-		ft_printf("* %2d. %-53s*\n", i, builtin_str[i]);
-	ft_putstr("************************************************************\n");
-	(void)args;
-	return (1);
-}
-
-int		msh_exit(char **args)
-{
-	(void)args;
-	return (0);
-}
-
-int		msh_launch(char **args)
+int		msh_launch(char **args, char **envp)
 {
 	pid_t	pid;
 	pid_t	wpid;
 	int		status;
-	// char	*cmd;
-
+	char	*cmd;
+	char	**arr;
+	int		i = 0;
+	// for (int i = 0; envp[i]; i++)
+	// 	ft_printf("%s\n", envp[i]);
 	pid = fork();
 	if (pid == 0)
 	{
+		arr = ft_strsplit(msh_get_env(envp, "PATH"), ':');
+		ft_asprintf(&cmd, "%s/%s", arr[i++], args[0]);
 		// ft_asprintf(&cmd, "/bin/%s", args[0]); // TODO: This is not good because I can't free cmd, I think...
-		// if (execve(cmd, args, NULL) == -1) // This one is the rigth one
-		if (execvp(args[0], args) == -1) // Not this one...
+		// TODO: Check access of paths for each path like this -> access(arr[i], X_OK)
+		while (execve(cmd, args, envp) == -1)
+		{
+			ft_printf("cmd: [%s]\n", cmd);
+			ft_printf("arr[%d]: [%s]\n", i, arr[i]);
+			free(cmd);
+			if (arr[i])
+				ft_asprintf(&cmd, "%s/%s", arr[i++], args[0]);
+			else
+			{
+				break ;
+			}
+		}
+		if (execve(args[0], args, envp) == -1)
+		// if (execve(args[0], args, envp) == -1) // This one is the rigth one
+		// if (execvp(args[0], args) == -1) // Not this one...
 		{
 			// ft_dprintf(2, "msh: command not found: %s\n", cmd);
 			ft_dprintf(2, "msh: command not found: %s\n", args[0]); // Same here
@@ -107,20 +61,31 @@ int		msh_launch(char **args)
 	return (1);
 }
 
-int		msh_execute(char **args)
+int		msh_run_builtins(char **args, t_dnarr *newenvp)
 {
-	int i;
-	int total;
+	if (!ft_strcmp(args[0], "cd"))
+		return (msh_cd(args));
+	else if (!ft_strcmp(args[0], "echo"))
+		return (msh_echo(args, newenvp));
+	else if (!ft_strcmp(args[0], "exit") || !ft_strcmp(args[0], "EXIT"))
+		return (msh_exit(args));
+	else if (!ft_strcmp(args[0], "help"))
+		return (msh_help(args));
+	else if (!ft_strcmp(args[0], "env"))
+		return (msh_displ_env(args, newenvp));
+	else if (!ft_strcmp(args[0], "setenv"))
+		return (msh_setenv(args, newenvp));
+	return (-1);
+}
+
+int		msh_execute(char **args, t_dnarr *newenvp, char **envp)
+{
+	int ret;
 
 	if (args[0] == NULL)
 		return (1);
-	i = 0;
-	total = msh_num_builtins();
-	while (i < total)
-	{
-		if (ft_strcmp(args[0], builtin_str[i]) == 0)
-			return ((*builtin_func[i])(args));
-		i++;
-	}
-	return (msh_launch(args));
+	ret = msh_run_builtins(args, newenvp);
+	if (ret != -1)
+		return (ret);
+	return (msh_launch(args, envp)); // TODO: Handle make in the shell
 }
