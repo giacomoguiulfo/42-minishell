@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/04 03:49:17 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/11 15:36:18 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/12 09:01:26 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	msh_loop(char **envp)
 	char	**args;
 	t_dnarr	*newenvp;
 
+	(void)envp;
 	status = 1;
 	newenvp = dnarr_create(sizeof(char *) ,50);
 	msh_init_envp(envp, newenvp);
@@ -65,7 +66,7 @@ void	msh_loop(char **envp)
 		msh_put_arrow();
 		line = msh_read_line();
 		args = msh_strsplit(line);
-		status = msh_execute(args, newenvp, envp);
+		status = msh_execute(args, newenvp);
 		free(line);
 		ft_free_map(args);
 	}

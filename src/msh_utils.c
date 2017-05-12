@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/05 23:53:37 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/11 10:21:04 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/12 09:30:47 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,26 @@ void	msh_put_arrow(void)
 	// TODO: Handle printing / when at root
 }
 
+int		msh_envcmp(char *env, char *lookup)
+{
+	char *ret;
+	int i;
+
+	i = 0;
+	while (env[i] != '=' && env[i] != '\0')
+		i++;
+	if (env[i] == '\0')
+		return (0);
+	ret = ft_strndup(env, i);
+	if (!ft_strcmp(ret, lookup))
+	{
+		free(ret);
+		return (1);
+	}
+	free(ret);
+	return (0);
+}
+
 char	*msh_get_env(char **envp, char *var)
 {
 	int i;
@@ -37,7 +57,7 @@ char	*msh_get_env(char **envp, char *var)
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strstr(envp[i], var))
+		if (msh_envcmp(envp[i], var))
 			return (ft_strchr(envp[i], '=') + 1);
 		i++;
 	}

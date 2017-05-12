@@ -6,7 +6,7 @@
 #    By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/20 14:52:17 by gguiulfo          #+#    #+#              #
-#    Updated: 2017/05/11 15:40:04 by gguiulfo         ###   ########.fr        #
+#    Updated: 2017/05/12 09:00:32 by gguiulfo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ NAME		:= minishell
 CC			:= gcc
 CFLAGS		+= -Wall -Wextra
 CFLAGS		+= -Werror
+# CFLAGS 		+= -g
 CFLAGS		+= -I includes -I libft/includes
 LDFLAGS		+= -L libft/ -lft
 # LDFLAGS		+= alloc_wrap.c

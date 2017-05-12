@@ -6,34 +6,27 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 15:58:10 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/11 10:27:57 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/11 16:26:08 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h> // TODO: Should I use a private?
 
-int		echo_env(char *str, t_dnarr *newenvp)
+int		echo_env(char *str, char **env)
 {
 	int i;
 	char *ret;
 
 	i = 0;
-	while (newenvp->contents[i])
+	while (env[i])
 	{
-		// ft_printf("ENV: %s\n", newenvp[i]);
-		// ft_printf("STR: %s\n", str);
-		// ft_printf("STR + 1: %s\n", str + 1);
-		// ft_printf("here inside\n");
-		if ((ret = ft_strstr(newenvp->contents[i], str + 1)))
+		if ((ret = ft_strstr(env[i], str + 1)))
 		{
-			// ft_printf("here megainside\n");
-			ft_putstr(ft_strchr(newenvp->contents[i], '=') + 1);
+			ft_putstr(ft_strchr(env[i], '=') + 1);
 			return (0);
 		}
-		// ft_printf("RET: %s\n", ret);
 		++i;
 	}
-	// ft_printf("here outside\n");
 	return (0);
 }
 
@@ -47,34 +40,29 @@ void	echo_octal(char *str, int *i)
 	if (!*str)
 		return ;
 	ret = ft_strndup(str, 3);
-	move += ISDIGIT(ret[0]); // TODO: Fix this...
-	move += ISDIGIT(ret[1]); // TODO: Fix this...
-	move += ISDIGIT(ret[2]); // TODO: Fix this...
-	// ft_printf("string %s\n", ret);
+	move += ISDIGIT(ret[0]);
+	move += ISDIGIT(ret[1]);
+	move += ISDIGIT(ret[2]);
 	value = ft_atoi_base(ret, 8);
-	// ft_printf("value %d\n", value);
 	free(ret);
 	if (value > 255 || value < 0)
 		ft_putchar(0);
 	else
 	{
 		ft_putchar(value);
-		// ft_printf("aca Value of i: %d\n", *i);
 		*i += move;
-		// ft_printf("aca Value of i: %d\n", *i);
 	}
 }
 
-int		echo_putstr(char *str, t_dnarr *newenvp)
+int		echo_putstr(char *str, char **env)
 {
 	int i;
 
 	i = 0;
-	(void)newenvp;
 	while (str[i])
 	{
 		if (str[i] == '$')
-			return (echo_env(&str[i], newenvp));
+			return (echo_env(&str[i], env));
 		else if (str[i] == '\\' && str[i + 1] == '"')
 		{
 			write(1, "\"", 1);
@@ -114,7 +102,7 @@ int		echo_putstr(char *str, t_dnarr *newenvp)
 	return (0);
 }
 
-int		msh_echo(char **args, t_dnarr *newenvp)
+int		msh_echo(char **args, char **env)
 {
 	int i;
 	int put_nl;
@@ -134,12 +122,12 @@ int		msh_echo(char **args, t_dnarr *newenvp)
 		put_nl = 0;
 	}
 	if (args[i])
-		if (echo_putstr(args[i++], newenvp))
+		if (echo_putstr(args[i++], env))
 			put_nl = 0;
 	while (args[i])
 	{
 		ft_putchar(' ');
-		if (echo_putstr(args[i++], newenvp))
+		if (echo_putstr(args[i++], env))
 			put_nl = 0;
 	}
 	if (put_nl)

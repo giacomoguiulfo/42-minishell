@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   msh_cmds.c                                         :+:      :+:    :+:   */
+/*   msh_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/05 21:57:23 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/11 15:31:09 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/12 11:07:23 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	**msh_cp_env(t_dnarr *newenvp)
 	while (++i < newenvp->end)
 		if (newenvp->contents[i] != NULL)
 			size++;
-	ret = (char **)malloc(sizeof(char *) * (size + 1));
+	ret = (char **)ft_memalloc(sizeof(char *) * (size + 1));
 	i = -1;
 	size = 0;
 	while (++i < newenvp->end)
@@ -34,16 +34,20 @@ char	**msh_cp_env(t_dnarr *newenvp)
 	return (ret);
 }
 
-void	msh_run_prog(char *executable, char **args, t_dnarr *newenvp)
+void	msh_run_prog(char *executable, char **args, char **env)
 {
 	pid_t	pid;
 	int		status;
-	char	**env;
 
-	env = msh_cp_env(newenvp);
 	pid = fork();
 	if (pid == 0)
-		execve(executable, args, env);
+	{
+		if (execve(executable, args, env) == -1)
+		{
+			ft_dprintf(2, "msh: permission denied for %s\n", executable);
+		}
+		exit(EXIT_FAILURE);
+	}
 	else if (pid < 0)
 	{
 		ft_dprintf(2, "msh: unable to fork the process %d\n", pid);
@@ -68,30 +72,27 @@ char	*msh_check_bin(char *executable, char *path)
 	return (NULL);
 }
 
-int		msh_launch_bins(char **args, t_dnarr *newenvp)
+int		msh_launch_bins(char **args, char **env)
 {
 	/* NEW PART */
 	char	**bins;
-	char	**env;
 	char	*executable;
 	int		i;
 
-
 	i = 0;
-	ft_printf("---launch bins---\n");
-	env = msh_cp_env(newenvp); // TODO: This is not optimal
+	// ft_printf("---launch bins---\n");
 	bins = ft_strsplit(msh_get_env(env, "PATH"), ':');
 	while (bins[i])
 	{
 		executable = msh_check_bin(args[0], bins[i]);
-		ft_printf("here executable: %s\n", executable);
+		// ft_printf("here executable: %s\n", executable);
 		if (executable != NULL)
 		{
 			ft_free_map(bins);
 			free(args[0]);
 			args[0] = executable;
-			ft_printf("executable: %s\n", executable);
-			msh_run_prog(executable, args, newenvp);
+			// ft_printf("executable: %s\n", executable);
+			msh_run_prog(executable, args, env);
 			// free(executable);
 			return (1);
 		}
@@ -153,23 +154,23 @@ int		msh_launch_bins(char **args, t_dnarr *newenvp)
 	// return (1);
 }
 
-int		msh_launch_reg(char *prog, char **args, t_dnarr *newenvp)
+int		msh_launch_reg(char *prog, char **args, char **env)
 {
 	struct stat statbuf;
 
-	ft_printf("---launch regular---\n");
+	// ft_printf("---launch regular---\n");
 	if (lstat(prog, &statbuf) == -1)
 		return (-1);
-	msh_run_prog(prog, args, newenvp);
+	msh_run_prog(prog, args, env);
 	return (0);
 }
 
-int		msh_run_builtins(char **args, t_dnarr *newenvp)
+int		msh_run_builtins(char **args, t_dnarr *newenvp, char **env)
 {
 	if (!ft_strcmp(args[0], "cd"))
-		return (msh_cd(args));
+		return (msh_cd(args, newenvp, env));
 	else if (!ft_strcmp(args[0], "echo"))
-		return (msh_echo(args, newenvp));
+		return (msh_echo(args, env));
 	else if (!ft_strcmp(args[0], "exit") || !ft_strcmp(args[0], "EXIT"))
 		return (msh_exit(args));
 	else if (!ft_strcmp(args[0], "help"))
@@ -177,29 +178,31 @@ int		msh_run_builtins(char **args, t_dnarr *newenvp)
 	else if (!ft_strcmp(args[0], "env"))
 		return (msh_displ_env(args, newenvp));
 	else if (!ft_strcmp(args[0], "setenv"))
-		return (msh_setenv(args, newenvp));
+		return (msh_setenv(args, newenvp, env));
 	else if (!ft_strcmp(args[0], "unsetenv"))
-		return (msh_unsetenv(args, newenvp));
+		return (msh_unsetenv(args, newenvp, env));
 	return (-1);
 }
 
-int		msh_execute(char **args, t_dnarr *newenvp, char **envp)
+int		msh_execute(char **args, t_dnarr *newenvp)
 {
 	int ret;
+	char **env;
 
-	(void)envp;
 	if (args[0] == NULL)
 		return (1);
-	ret = msh_run_builtins(args, newenvp);
+	env = msh_cp_env(newenvp);
+	ret = msh_run_builtins(args, newenvp, env);
 	if (ret != -1)
-		return (ret);
-	if (msh_launch_reg(args[0], args, newenvp) == -1)
 	{
-		ft_printf("hello world\n");
-		// TODO: Check for existence of path
-		ft_printf("EXISTS: %d\n", msh_env_idx(newenvp, "PATH"));
-		if (msh_env_idx(newenvp, "PATH") == -1 || !msh_launch_bins(args, newenvp))
+		free(env);
+		return (ret);
+	}
+	if (msh_launch_reg(args[0], args, env) == -1)
+	{
+		if (msh_env_idx(newenvp, "PATH") == -1 || !msh_launch_bins(args, env))
 			ft_dprintf(2, "msh: command not found: %s\n", args[0]);
 	}
+	free(env);
 	return (1);
 }
