@@ -6,7 +6,7 @@
 #    By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/20 14:52:17 by gguiulfo          #+#    #+#              #
-#    Updated: 2017/05/12 09:00:32 by gguiulfo         ###   ########.fr        #
+#    Updated: 2017/05/13 04:07:34 by gguiulfo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,12 +18,12 @@ CFLAGS		+= -Werror
 # CFLAGS 		+= -g
 CFLAGS		+= -I includes -I libft/includes
 LDFLAGS		+= -L libft/ -lft
-# LDFLAGS		+= alloc_wrap.c
+LDFLAGS		+= alloc_wrap.c
 
 LIBFT		:= libft/libft.a
 
 REGULAR		:= msh_main msh_exec msh_utils msh_strsplit
-BUILTINS	:= msh_echo msh_cd msh_extra msh_env msh_setenv msh_unsetenv
+BUILTINS	:= msh_echo msh_cd msh_extra msh_env
 
 FILES		:=	$(addprefix builtins/, $(BUILTINS)) \
 				$(REGULAR)

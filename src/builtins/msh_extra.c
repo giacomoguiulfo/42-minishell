@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 16:02:17 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/10 13:16:05 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 03:45:44 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,26 @@ int		msh_help(char **args)
 	ft_putstr("************************************************************\n");
 	(void)args;
 	return (1);
+}
+
+void	echo_esc_chr(char esc)
+{
+	if (esc == '"')
+		write(1, "\"", 1);
+	else if (esc == '\'')
+		write(1, "\'", 1);
+	else if (esc == 'b')
+		write(1, "\b", 1);
+	else if (esc == 'f')
+		write(1, "\f", 1);
+	else if (esc == 'n')
+		write(1, "\n", 1);
+	else if (esc == 'r')
+		write(1, "\r", 1);
+	else if (esc == 't')
+		write(1, "\t", 1);
+	else if (esc == 'v')
+		write(1, "\v", 1);
+	else if (esc == '\\')
+		write(1, "\\", 1);
 }

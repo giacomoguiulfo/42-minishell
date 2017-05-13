@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/09 21:08:23 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/12 10:25:01 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 01:12:36 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,8 @@ char		**msh_strsplit(char *line)
 	if (!line)
 		return (NULL);
 	words = msh_count_words(line);
-	// ft_printf("Number of words: [%d]\n", words);
 	ret = (char **)ft_memalloc(sizeof(char *) * (words + 1));
 	while (i < words)
 		ret[i++] = msh_next_word(line, &j);
-	// i = -1;
-	// while (++i < words)
-		// ft_printf("Word[%d]: [%s]\n", i, ret[i]);
 	return (ret);
 }
