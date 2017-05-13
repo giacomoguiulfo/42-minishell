@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 16:02:17 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 07:17:15 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 08:08:21 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,14 @@ int		msh_env_inval(char *str)
 		i++;
 	}
 	return (0);
+}
+
+int		msh_senv_helper(char *str, t_dnarr *newenvp, char *tmp)
+{
+	int index;
+
+	index = msh_env_idx(newenvp, str);
+	free(dnarr_remove(newenvp, index));
+	dnarr_set(newenvp, index, tmp);
+	return (1);
 }

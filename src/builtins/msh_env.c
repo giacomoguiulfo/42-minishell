@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 19:24:50 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 07:31:36 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 08:08:01 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ int		msh_setenv(char **args, t_dnarr *newenvp)
 {
 	char	*tmp;
 	char	*grd;
-	char	index;
 
 	if (!args[1] || !args[2])
 		return (1);
@@ -100,12 +99,7 @@ int		msh_setenv(char **args, t_dnarr *newenvp)
 	else
 		ft_asprintf(&tmp, "%s=%s", args[1], args[2]);
 	if (msh_get_env(newenvp, args[1]) != NULL)
-	{
-		index = msh_env_idx(newenvp, args[1]);
-		free(dnarr_remove(newenvp, index));
-		dnarr_set(newenvp, index, tmp);
-		return (1);
-	}
+		return (msh_senv_helper(args[1], newenvp, tmp));
 	dnarr_push(newenvp, tmp);
 	return (1);
 }

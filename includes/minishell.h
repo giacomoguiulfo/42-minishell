@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/04 01:53:12 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 07:17:30 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 08:08:43 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int		msh_envcmp(char *env, char *lookup);
 char	**msh_cp_env(t_dnarr *newenvp);
 int		msh_env_idx(t_dnarr *newenvp, char *var);
 int		msh_env_inval(char *str);
+int		msh_senv_helper(char *str, t_dnarr *newenvp, char *tmp);
 
 /*
 ** Extras
