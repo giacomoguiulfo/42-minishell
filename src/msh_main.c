@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/04 03:49:17 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 03:57:46 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 07:26:52 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,20 @@ char	*msh_read_line(void)
 	buffer = (char *)malloc(sizeof(char) * bufsize);
 	while (1)
 	{
-		c = ft_getchar();
-		if (c == EOF || c == '\n')
-		{
+		if ((c = ft_getchar()) == EOF)
+			free(buffer);
+		if (c == EOF)
+			return (NULL);
+		if (c == '\n')
 			buffer[position] = '\0';
+		if (c == '\n')
 			return (buffer);
-		}
 		else
-			buffer[position] = c;
-		position++;
+			buffer[position++] = c;
 		if (position >= bufsize)
-		{
 			buffer = ft_realloc(buffer, bufsize, bufsize + MSH_RL_SIZ);
+		if (position >= bufsize)
 			bufsize += MSH_RL_SIZ;
-		}
 	}
 }
 
@@ -65,6 +65,8 @@ void	msh_loop(char **envp)
 	{
 		msh_put_arrow();
 		line = msh_read_line();
+		if (!line)
+			break ;
 		args = msh_strsplit(line);
 		status = msh_execute(args, newenvp);
 		free(line);

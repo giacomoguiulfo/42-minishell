@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 15:58:00 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 04:07:53 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 07:12:40 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,35 @@ void	msh_chenv_pwd(t_dnarr *newenvp, char *oldcwd)
 	free(tmp);
 }
 
+int		msh_cd_multi(char **args, t_dnarr *newenvp, char *cwd)
+{
+	char	*ctemp[2];
+	char	*res;
+	int		i;
+	int		idx;
+
+	i = 0;
+	while (args[i])
+		i++;
+	if (i == 3 && (res = ft_strstr(cwd, args[1])))
+	{
+		idx = res - cwd;
+		i = ft_strlen(args[1]);
+		ctemp[0] = ft_strndup(cwd, idx);
+		ctemp[1] = ft_strdup(cwd + idx + i);
+		ft_asprintf(&res, "%s%s%s", ctemp[0], args[2], ctemp[1]);
+		if (chdir(res) != 0)
+			ft_dprintf(2, "msh: unable to change directory\n");
+		else
+			msh_chenv_pwd(newenvp, res);
+		free(res);
+		free(ctemp[0]);
+		free(ctemp[1]);
+		return (0);
+	}
+	return (1);
+}
+
 void	msh_cd_ext(char **args, t_dnarr *newenvp, char *cwd)
 {
 	if (args[1][0] == '-' && args[1][1] == '\0')
@@ -41,7 +70,7 @@ void	msh_cd_ext(char **args, t_dnarr *newenvp, char *cwd)
 		else
 		{
 			msh_chenv_pwd(newenvp, cwd);
-			ft_putendl(msh_get_env(newenvp, "OLDPWD"));
+			ft_putendl(msh_get_env(newenvp, "PWD"));
 		}
 	}
 	else if (args[1][0] == '$' && args[1][1] != '\0')
@@ -51,13 +80,12 @@ void	msh_cd_ext(char **args, t_dnarr *newenvp, char *cwd)
 		else
 			msh_chenv_pwd(newenvp, cwd);
 	}
+	else if (msh_cd_multi(args, newenvp, cwd) == 0)
+		;
+	else if (chdir(args[1]) != 0)
+		ft_dprintf(2, "msh: unable to change directory\n");
 	else
-	{
-		if (chdir(args[1]) != 0)
-			ft_dprintf(2, "msh: unable to change directory\n");
-		else
-			msh_chenv_pwd(newenvp, cwd);
-	}
+		msh_chenv_pwd(newenvp, cwd);
 }
 
 int		msh_cd(char **args, t_dnarr *newenvp)

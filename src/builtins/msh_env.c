@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 19:24:50 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 02:46:24 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 07:31:36 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,33 +55,50 @@ int		msh_unsetenv(char **args, t_dnarr *newenvp)
 	return (1);
 }
 
-int		msh_env_inval(char *str)
+int		msh_concat_env(char **ret, char *str, t_dnarr *newenvp)
 {
-	int	i;
+	char	*tmp;
+	int		i;
 
 	i = 0;
-	while (str[i])
-	{
-		if (ISLOWER(str[i]))
-			return (1);
+	while (str[i] && str[i] != ':' && str[i] != '\'')
 		i++;
+	tmp = ft_strndup(str + 1, (i > 0) ? i - 1 : i);
+	if (msh_get_env(newenvp, tmp))
+	{
+		if (str[i] == ':')
+			ft_asprintf(ret, "%s%s", msh_get_env(newenvp, tmp), &str[i]);
+		else if (str[i] == '\'')
+			ft_asprintf(ret, "%s%s", msh_get_env(newenvp, tmp), str + i + 1);
+		else
+			ft_asprintf(ret, "%s", msh_get_env(newenvp, tmp));
 	}
-	return (0);
+	else
+		*ret = ft_strdup("");
+	free(tmp);
+	return (1);
 }
 
 int		msh_setenv(char **args, t_dnarr *newenvp)
 {
 	char	*tmp;
+	char	*grd;
 	char	index;
 
 	if (!args[1] || !args[2])
 		return (1);
 	if (ft_strchr(args[1], '=') || ft_strchr(args[2], '=') ||
 		msh_env_inval(args[1]))
-	{
 		return (1);
+	if (args[2][0] == '$')
+	{
+		msh_concat_env(&tmp, args[2], newenvp);
+		grd = tmp;
+		ft_asprintf(&tmp, "%s=%s", args[1], tmp);
+		free(grd);
 	}
-	ft_asprintf(&tmp, "%s=%s", args[1], args[2]);
+	else
+		ft_asprintf(&tmp, "%s=%s", args[1], args[2]);
 	if (msh_get_env(newenvp, args[1]) != NULL)
 	{
 		index = msh_env_idx(newenvp, args[1]);

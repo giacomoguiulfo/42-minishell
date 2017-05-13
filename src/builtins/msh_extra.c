@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 16:02:17 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 03:45:44 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/05/13 07:17:15 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,18 @@ void	echo_esc_chr(char esc)
 		write(1, "\v", 1);
 	else if (esc == '\\')
 		write(1, "\\", 1);
+}
+
+int		msh_env_inval(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!ISUPPER(str[i]))
+			return (1);
+		i++;
+	}
+	return (0);
 }
