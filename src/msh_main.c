@@ -6,7 +6,7 @@
 /*   By: gguiulfo <gguiulfo@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/04 03:49:17 by gguiulfo          #+#    #+#             */
-/*   Updated: 2017/05/13 07:26:52 by gguiulfo         ###   ########.fr       */
+/*   Updated: 2017/08/11 20:53:32 by gguiulfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,26 +41,26 @@ char	*msh_read_line(void)
 	}
 }
 
-void	msh_init_envp(char **envp, t_dnarr *newenvp)
+void	msh_init_envp(t_dnarr *newenvp)
 {
-	int i;
+	extern char	**environ;
+	size_t		i;
 
 	i = 0;
-	while (envp[i])
-		dnarr_push(newenvp, ft_strdup(envp[i++]));
+	while (environ[i])
+		dnarr_push(newenvp, ft_strdup(environ[i++]));
 }
 
-void	msh_loop(char **envp)
+void	msh_loop(void)
 {
 	int		status;
 	char	*line;
 	char	**args;
 	t_dnarr	*newenvp;
 
-	(void)envp;
 	status = 1;
 	newenvp = dnarr_create(sizeof(char *), 50);
-	msh_init_envp(envp, newenvp);
+	msh_init_envp(newenvp);
 	while (status)
 	{
 		msh_put_arrow();
@@ -75,10 +75,8 @@ void	msh_loop(char **envp)
 	dnarr_clrdestroy(newenvp);
 }
 
-int		main(int argc, char **argv, char **envp)
+int		main(void)
 {
-	(void)argc;
-	(void)argv;
-	msh_loop(envp);
+	msh_loop();
 	return (0);
 }
